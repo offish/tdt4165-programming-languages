@@ -7,7 +7,7 @@
 % a)
 local X Y = 300 Z = 30 in
     X = Y * Z
-    {Show X}
+    {Show X} % 9000
 end 
 
 % b)
@@ -41,19 +41,19 @@ proc {PrintGreater Number1 Number2}
     {Show {Max Number1 Number2}}
 end
 
-{PrintGreater 10 20}
+{PrintGreater 10 20} % 20
 
 % Task 5: Variables II
 declare Circle
 
-proc {Circle R} A D C Pi = 3.14 in
+proc {Circle R} A D C Pi = 355.0 / 113.0 in
     A = Pi * R * R
     D = 2.0 * R
     C = Pi * D
 
-    {Show A}
-    {Show D}
-    {Show C}
+    {Show A} % 28.2743
+    {Show D} % 6
+    {Show C} % 18.8495
 end
 
 {Circle 3.0}
@@ -67,92 +67,22 @@ fun {Factorial N}
     end
 end
 
-{Show {Factorial 3}}
+{Show {Factorial 3}} % 6
 
 % Task 7: Lists
-% a)
-fun {Length List}
-    case List of Head|Rest then
-        1 + {Length Rest}
-    [] nil then
-        0
-    end
-end
-
-% b)
-fun {Take List Count}
-    if Count > {Length List} then
-        List
-    elseif Count == 0 then
-        nil
-    else
-        % take first element then element +1 then element +2 etc.
-        case List of Head|Rest then
-            Head | {Take Rest Count - 1}
-        end
-    end
-end
-
-% c)
-fun {Drop List Count}
-    if Count > {Length List} then
-        nil
-    else
-        case List of Head|Tail then
-            if Count == 0 then
-                List
-            else
-                {Drop Tail Count - 1}
-            end
-        end
-    end
-end
-
-% d)
-fun {Append List1 List2}
-    case List1 of Head|Rest then
-        Head | {Append Rest List2}
-    else
-        List2
-    end
-end
-
-% e)
-fun {Member List Element}
-    case List of Head|Rest then
-        if Head == Element then
-            true
-        else
-            {Member Rest Element}
-        end
-    else
-        false
-    end
-end
-
-% f)
-fun {Position List Element}
-    case List of Head|Rest then
-        if Head == Element then
-            1
-        else
-            {Position Rest Element} + 1
-        end
-    end
-end
+\insert 'List.oz'
 
 MyList = [1 2 3 4 10 11]
-MyListTwo = [33 21 43]
+MyListTwo = [33 21]
 
-% {Show {Length MyList}}
-% {Show {Take MyList 7}}
-{Show MyList}
-{Show {Take MyList 3}}
-{Show {Drop MyList 3}}
-{Show {Append MyList MyListTwo}}
-{Show {Member MyList 10}}
-{Show {Member MyList 12}}
-{Show {Position MyList 10}}
+{Show MyList} % [1 2 3 4 10 11]
+{Show {Length MyList}} % 6
+{Show {Take MyList 3}} % [1 2 3]
+{Show {Drop MyList 3}} % [4 10 11]
+{Show {Append MyList MyListTwo}} % [1 2 3 4 10 11 33 21]
+{Show {Member MyList 10}} % true
+{Show {Member MyList 12}} % false
+{Show {Position MyList 10}} % 5
 
 % Task 8: List II
 % a)
@@ -176,6 +106,7 @@ fun {Pop List}
     {Drop List 1}
 end
 
-{Show {Push MyList 5}}
-{Show {Peek [nil]}}
-{Show {Pop MyList}}
+{Show {Push MyList 5}} % [1 2 3 4 10 11 5]
+{Show {Peek MyList}} % 1
+{Show {Peek [nil]}} % nil
+{Show {Pop MyList}} % [2 3 4 10 11]
