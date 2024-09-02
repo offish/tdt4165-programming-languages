@@ -28,11 +28,11 @@ fun {Drop List Count}
     if Count > {Length List} then
         nil
     else
-        case List of Head|Tail then
+        case List of Head|Rest then
             if Count == 0 then
                 List
             else
-                {Drop Tail Count - 1}
+                {Drop Rest Count - 1}
             end
         end
     end

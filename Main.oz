@@ -3,6 +3,9 @@
 % Task 1: Hello World
 {Show 'Hello World'}
 
+% Task 2: Using other text editors
+% Done in Visual Studio Code
+
 % Task 3: Variables
 % a)
 local X Y = 300 Z = 30 in
@@ -18,10 +21,19 @@ local X Y in
 end
 
 /*
-    I think Y can be printed due to the overhead and time it takes for the thread
-    to be created and ran, that the following statement Y=X is able to run before
-    the actual value gets printed. I would therefore also assume that the thread
-    is non-blocking, as the next line is ran.
+    Why can showInfo print Y before it is assigned?
+    This is because of dataflow variables, where an unbound variable waits for 
+    a value. This means that the thread will wait for Y to be bound to a value
+    before showing the value.
+
+    Why is this behavior useful?
+    This behavior makes sure computation involving shared variables are
+    synchronized. This also allows for concurrent programs. It might also reduce
+    the chances for deadlocks.
+    
+    What does the statement Y=X do?
+    The statement Y=X is a unification statement, this means that Y and X must
+    refer to the same value.
 */
 
 % Task 4: Functions and procedures
