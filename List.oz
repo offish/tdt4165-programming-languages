@@ -1,6 +1,5 @@
+declare Position
 
-% Task 7: Lists
-% a)
 fun {Length List}
     case List of Head|Rest then
         1 + {Length Rest}
@@ -9,7 +8,6 @@ fun {Length List}
     end
 end
 
-% b)
 fun {Take List Count}
     if Count > {Length List} then
         List
@@ -23,7 +21,6 @@ fun {Take List Count}
     end
 end
 
-% c)
 fun {Drop List Count}
     if Count > {Length List} then
         nil
@@ -38,16 +35,14 @@ fun {Drop List Count}
     end
 end
 
-% d)
 fun {Append List1 List2}
     case List1 of Head|Rest then
-        Head|{Append Rest List2}
+        Head | {Append Rest List2}
     else
         List2
     end
 end
 
-% e)
 fun {Member List Element}
     case List of Head|Rest then
         if Head == Element then
@@ -60,7 +55,6 @@ fun {Member List Element}
     end
 end
 
-% f)
 fun {Position List Element}
     case List of Head|Rest then
         if Head == Element then
