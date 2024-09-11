@@ -21,6 +21,10 @@ fun {Take List Count}
     end
 end
 
+fun {TakeFromBack List Count}
+    {Drop List {Length List} - Count}
+end
+
 fun {Drop List Count}
     if Count > {Length List} then
         nil
@@ -31,6 +35,8 @@ fun {Drop List Count}
             else
                 {Drop Rest Count - 1}
             end
+        % [] nil then
+        %     nil
         end
     end
 end

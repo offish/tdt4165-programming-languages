@@ -34,22 +34,57 @@ end
 
 {Show {Tokenize {Lex "1 2 + 3 *"}}}
 
+% MyStack = [nil]
+
 % c
 fun {Interpret Tokens}
-    case Tokens of nil then
-        nil
-    [] Token|Rest then
-        case Token of number(N) then
-            {System.showInfo N}
-            {Append {Interpret Rest} [N]}
-        [] operator(type:plus) then
-            % take the two first elements and add them
-            % then append to the list, without the two first elements
-            % {Take Tokens 1} + {Take Tokens 2}
-            {System.showInfo "matched on plus"}
+    {Browse Tokens}
+    local A B Operands NewList in 
+        case Tokens of nil then
+            nil
+        [] Token|Rest then
+            case Token of number(N) then
+                % {Append {Interpret Rest} [N]}
+                % note this is wrong order
+                {Interpret {Append Rest [N]}}
+            [] operator(type:plus) then
+                Operands = {TakeFromBack Tokens 2}
+                A = Operands.2.1
+                B = Operands.1
+                
+                {Browse A}
+                {Browse B}
+                % NewList = {Drop {TakeFromBack Tokens 1000} 1}
+                % {Interpret {Append NewList [A + B]}} 
+                [A + B]
+            [] operator(type:minus) then
+                List = {Drop Tokens 1}
+                A = List.2.1
+                B = List.1
+                [A - B]
+            [] operator(type:multiply) then
+                List = {Drop Tokens 1}
+                A = List.2.1
+                B = List.1
+                [A * B]
+            [] operator(type:divide) then
+                List = {Drop Tokens 1}
+                A = List.2.1
+                B = List.1
+                [A / B]
+                % {}
+                % List
+                
+                % {Append {Interpret Rest} [{List.hd Rest} + {List.hd {List.tl Rest}}]}
 
-            {Take Tokens 1}
-            % {{Take Tokens 1} + {Take Tokens 2}}
+            %     {Append {Interpret Rest} [{List.hd Rest} + {List.hd {List.tl Rest}}]}
+            % [] operator(type:minus) then
+            %     {Append {Interpret Rest} [{List.hd Rest} - {List.hd {List.tl Rest}}]}
+            % [] operator(type:multiply) then
+            %     {Append {Interpret Rest} [{List.hd Rest} * {List.hd {List.tl Rest}}]}
+            % [] operator(type:divide) then
+            %     {Append {Interpret Rest} [{List.hd Rest} / {List.hd {List.tl Rest}}]}
+            end
         end
     end
 end
@@ -57,9 +92,11 @@ end
 {System.showInfo "--- BELOW ---"}
 
 Tokens = {Tokenize {Lex "1 2 +"}}
-
 {Show Tokens}
-{Show {Interpret Tokens}}
+
+Interpreted = {Interpret Tokens}
+{Browse Interpreted}
+% {Show Interpreted}
 
 % {Show {Interpret {Tokenize {Lex "1 2 +"}}}}
 % {Show {Interpret {Tokenize {Lex "1 2 3 +"}}}}
