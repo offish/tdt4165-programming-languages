@@ -9,6 +9,7 @@ fun {Length List}
 end
 
 fun {Take List Count}
+    % Get the first x elements of the list
     if Count > {Length List} then
         List
     elseif Count == 0 then
@@ -22,10 +23,12 @@ fun {Take List Count}
 end
 
 fun {TakeFromBack List Count}
+    % Get the last x elements of the list
     {Drop List {Length List} - Count}
 end
 
 fun {Drop List Count}
+    % Drop the first x elements of the list
     if Count > {Length List} then
         nil
     else
@@ -69,4 +72,8 @@ fun {Position List Element}
             {Position Rest Element} + 1
         end
     end
+end
+
+fun {GetUpdatedList Tokens}
+    {Take Tokens.2 {Length Tokens.2} - 2}
 end

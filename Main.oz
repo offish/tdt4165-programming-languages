@@ -39,7 +39,11 @@ end
 % c
 fun {Interpret Tokens}
     {Browse Tokens}
-    local A B Operands NewList in 
+    % NOTE: Output is correct, but in wrong order.
+    % Restructure the code to fix this issue.
+    % Returns [1 5] but should be [5 1]
+    % Given [1 2 3 +] 
+    local A B Operands Result TempList in
         case Tokens of nil then
             nil
         [] Token|Rest then
@@ -51,39 +55,42 @@ fun {Interpret Tokens}
                 Operands = {TakeFromBack Tokens 2}
                 A = Operands.2.1
                 B = Operands.1
-                
+                Result = [A + B]
+
+                {Browse Tokens}
+
                 {Browse A}
                 {Browse B}
+
+                TempList = {GetUpdatedList Tokens}
+
+                {Browse TempList}
+                {Interpret {Append TempList Result}}
                 % NewList = {Drop {TakeFromBack Tokens 1000} 1}
                 % {Interpret {Append NewList [A + B]}} 
-                [A + B]
+                % [A + B]
             [] operator(type:minus) then
-                List = {Drop Tokens 1}
-                A = List.2.1
-                B = List.1
-                [A - B]
+                Operands = {TakeFromBack Tokens 2}
+                A = Operands.2.1
+                B = Operands.1
+                Result = [A - B]
+
+                TempList = {GetUpdatedList Tokens}
+                {Interpret {Append TempList Result}}
             [] operator(type:multiply) then
-                List = {Drop Tokens 1}
-                A = List.2.1
-                B = List.1
+                Operands = {TakeFromBack Tokens 2}
+                A = Operands.2.1
+                B = Operands.1
+
                 [A * B]
             [] operator(type:divide) then
-                List = {Drop Tokens 1}
-                A = List.2.1
-                B = List.1
-                [A / B]
-                % {}
-                % List
-                
-                % {Append {Interpret Rest} [{List.hd Rest} + {List.hd {List.tl Rest}}]}
+                Operands = {TakeFromBack Tokens 2}
+                A = Operands.2.1
+                B = Operands.1
 
-            %     {Append {Interpret Rest} [{List.hd Rest} + {List.hd {List.tl Rest}}]}
-            % [] operator(type:minus) then
-            %     {Append {Interpret Rest} [{List.hd Rest} - {List.hd {List.tl Rest}}]}
-            % [] operator(type:multiply) then
-            %     {Append {Interpret Rest} [{List.hd Rest} * {List.hd {List.tl Rest}}]}
-            % [] operator(type:divide) then
-            %     {Append {Interpret Rest} [{List.hd Rest} / {List.hd {List.tl Rest}}]}
+                [A / B]
+            else 
+                Tokens
             end
         end
     end
@@ -91,7 +98,7 @@ end
 
 {System.showInfo "--- BELOW ---"}
 
-Tokens = {Tokenize {Lex "1 2 +"}}
+Tokens = {Tokenize {Lex "1 2 3 +"}}
 {Show Tokens}
 
 Interpreted = {Interpret Tokens}
