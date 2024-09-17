@@ -77,3 +77,15 @@ end
 fun {GetUpdatedList Tokens}
     {Take Tokens.2 {Length Tokens.2} - 2}
 end
+
+fun {GetUpdatedListOne Tokens}
+    {Take Tokens.2 {Length Tokens.2} - 1}
+end
+
+fun {Reverse List}
+    case List of Head|Rest then
+        {Append {Reverse Rest} [Head]}
+    else
+        nil
+    end
+end
