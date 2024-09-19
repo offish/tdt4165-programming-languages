@@ -22,6 +22,10 @@ fun {Take List Count}
     end
 end
 
+fun {TakeTillLastTwo List}
+    {Take List {Length List} - 2}
+end
+
 fun {TakeFromBack List Count}
     % Get the last x elements of the list
     {Drop List {Length List} - Count}

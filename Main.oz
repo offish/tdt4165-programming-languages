@@ -41,22 +41,13 @@ end
 
 {Show {Tokenize {Lex "1 2 + 3 *"}}}
 
-% MyStack = [nil]
-
 % c
-fun {Interpret Tokens}
-    {Browse Tokens}
-    % NOTE: Output is correct, but in wrong order.
-    % Restructure the code to fix this issue.
-    % Returns [1 5] but should be [5 1]
-    % Given [1 2 3 +] 
+fun {Interpret Tokens} 
     local A B Operands Result TempList in
         case Tokens of nil then
             nil
         [] Token|Rest then
             case Token of number(N) then
-                % {Append {Interpret Rest} [N]}
-                % note this is wrong order
                 {Interpret {Append Rest [N]}}
             [] operator(type:plus) then
                 Operands = {TakeFromBack Tokens 2}
@@ -113,17 +104,13 @@ fun {Interpret Tokens}
                 TempList = {GetUpdatedListOne Tokens}
                 {Interpret {Append TempList Result}}
             [] command(type:clear) then
-                % this does not work yet
                 {Interpret nil}
-                % {Interpret {Append nil Rest}}
             else 
                 {Reverse Tokens}
             end
         end
     end
 end
-
-{System.showInfo "--- BELOW ---"}
 
 {Assert {Interpret {Tokenize {Lex "1 2 +"}}} [3]}
 {Assert {Interpret {Tokenize {Lex "1 2 + 3"}}} [3 3]}
@@ -137,13 +124,65 @@ end
 {Assert {Interpret {Tokenize {Lex "3 6 / 1 +"}}} [3]}
 {Assert {Interpret {Tokenize {Lex "2 1 -"}}} [~1]}
 {Assert {Interpret {Tokenize {Lex "7 d d"}}} [7 7 7]}
+{Assert {Interpret {Tokenize {Lex "1 1 + d c"}}} nil}
 
 Tokens = {Tokenize {Lex "2 2 3 + d + / 1"}}
 {Show Tokens}
 
 Interpreted = {Interpret Tokens}
 {Browse Interpreted}
-% {Show Interpreted}
 
-% {Show {Interpret {Tokenize {Lex "1 2 +"}}}}
-% {Show {Interpret {Tokenize {Lex "1 2 3 +"}}}}
+% Task 2: Convert postfix notation into an expression tree
+fun {ExpressionTreeInternal Tokens ExpressionStack}
+    if Tokens == nil then
+        ExpressionStack.1
+    else
+        local Token Operands A B TempList in
+            case Tokens of nil then
+                nil
+            [] Token|Rest then
+                case Token of number(N) then
+                    {ExpressionTreeInternal Rest {Append ExpressionStack [N]}}
+                [] operator(type:plus) then
+                    Operands = {TakeFromBack ExpressionStack 2}
+                    A = Operands.2.1
+                    B = Operands.1
+                    
+                    TempList = {TakeTillLastTwo ExpressionStack}
+                    {ExpressionTreeInternal Rest {Append TempList [plus(A B)]}}
+                [] operator(type:minus) then
+                    Operands = {TakeFromBack ExpressionStack 2}
+                    A = Operands.2.1
+                    B = Operands.1
+                    
+                    TempList = {TakeTillLastTwo ExpressionStack}
+                    {ExpressionTreeInternal Rest {Append TempList [minus(A B)]}}
+                [] operator(type:multiply) then
+                    Operands = {TakeFromBack ExpressionStack 2}
+                    A = Operands.2.1
+                    B = Operands.1
+                    
+                    TempList = {TakeTillLastTwo ExpressionStack}
+                    {ExpressionTreeInternal Rest {Append TempList [multiply(A B)]}}
+                [] operator(type:divide) then
+                    Operands = {TakeFromBack ExpressionStack 2}
+                    A = Operands.2.1
+                    B = Operands.1
+                    
+                    TempList = {TakeTillLastTwo ExpressionStack}
+                    {ExpressionTreeInternal Rest {Append TempList [divide(A B)]}}
+                end
+            end
+        end
+    end
+end
+
+fun {ExpressionTree Tokens}
+    {ExpressionTreeInternal Tokens nil}
+end
+
+{Assert {ExpressionTree {Tokenize {Lex "1 2 +"}}} plus(2 1)}
+{Assert {ExpressionTree {Tokenize {Lex "2 3 + 5 /"}}} divide(5 plus(3 2))}
+{Assert {ExpressionTree {Tokenize {Lex "3 10 9 * - 7 +"}}} plus(7 minus(multiply(9 10) 3))}
+
+{System.showInfo "--- DONE ---"}
