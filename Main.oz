@@ -1,188 +1,90 @@
-% Assignment 2
-\insert 'List.oz'
-\insert 'Utils.oz'
+% Task 1
+declare QuadraticEquation
 
-declare Lex
-
-% Task 1: mdc
-% a
-fun {Lex Input}
-    {String.tokens Input 32}
-end
-
-{Show {Lex "1 2 + 3 *"}}
-
-% b
-fun {Tokenize Lexemes}
-    case Lexemes of nil then
-        nil
-    [] Lex|Rest then
-        case Lex of "+" then
-            {Append [operator(type:plus)] {Tokenize Rest}}
-        [] "-" then
-            {Append [operator(type:minus)] {Tokenize Rest}}
-        [] "*" then
-            {Append [operator(type:multiply)] {Tokenize Rest}}
-        [] "/" then
-            {Append [operator(type:divide)] {Tokenize Rest}}
-        [] "p" then
-            {Append [command(type:print)] {Tokenize Rest}}
-        [] "d" then
-            {Append [command(type:duplicate)] {Tokenize Rest}}
-        [] "i" then
-            {Append [command(type:invert)] {Tokenize Rest}}
-        [] "c" then
-            {Append [command(type:clear)] {Tokenize Rest}}
-        [] N then
-            {Append [number({String.toInt N})] {Tokenize Rest}}
+proc {QuadraticEquation A B C ?RealSol ?X1 ?X2}
+    local Delta in
+        Delta = B * B - 4.0 * A * C
+        
+        if Delta < 0.0 then
+            RealSol = false
+        else
+            RealSol = true
+            X1 = (~B + {Float.sqrt Delta}) / (2.0 * A)
+            X2 = (~B - {Float.sqrt Delta}) / (2.0 * A)
         end
     end
 end
 
-{Show {Tokenize {Lex "1 2 + 3 *"}}}
+local X1 X2 RealSol in
+    {QuadraticEquation 2.0 1.0 ~1.0 RealSol X1 X2}
+    
+    {System.show RealSol}
+    {System.show X1}
+    {System.show X2}
+end
 
-% c
-fun {Interpret Tokens} 
-    local A B Operands Result TempList in
-        case Tokens of nil then
-            nil
-        [] Token|Rest then
-            case Token of number(N) then
-                {Interpret {Append Rest [N]}}
-            [] operator(type:plus) then
-                Operands = {TakeFromBack Tokens 2}
-                A = Operands.2.1
-                B = Operands.1
-                Result = [A + B]
+local X1 X2 RealSol in
+    {QuadraticEquation 2.0 1.0 2.0 RealSol X1 X2}
+    
+    {System.show RealSol}
+    {System.show X1}
+    {System.show X2}
+end
 
-                TempList = {GetUpdatedList Tokens}
-                {Interpret {Append TempList Result}}
-            [] operator(type:minus) then
-                Operands = {TakeFromBack Tokens 2}
-                A = Operands.2.1
-                B = Operands.1
-                Result = [A - B]
-
-                TempList = {GetUpdatedList Tokens}
-                {Interpret {Append TempList Result}}
-            [] operator(type:multiply) then
-                Operands = {TakeFromBack Tokens 2}
-                A = Operands.2.1
-                B = Operands.1
-                
-                Result = [A * B]
-
-                TempList = {GetUpdatedList Tokens}
-                {Interpret {Append TempList Result}}
-            [] operator(type:divide) then
-                Operands = {TakeFromBack Tokens 2}
-                A = Operands.2.1
-                B = Operands.1
-                
-                Result = [A div B]
-
-                TempList = {GetUpdatedList Tokens}
-                {Interpret {Append TempList Result}}
-            [] command(type:print) then
-                Operands = {TakeFromBack Tokens 1}
-                A = Operands.1
-
-                {System.showInfo A}
-                {Interpret {Drop Tokens 1}}
-            [] command(type:duplicate) then
-                Operands = {TakeFromBack Tokens 1}
-                A = Operands.1
-
-                TempList = {Drop Tokens 1}
-                {Interpret {Append TempList [A]}}
-            [] command(type:invert) then
-                Operands = {TakeFromBack Tokens 1}
-                A = Operands.1
-
-                Result = [A * ~1]
-
-                TempList = {GetUpdatedListOne Tokens}
-                {Interpret {Append TempList Result}}
-            [] command(type:clear) then
-                {Interpret nil}
-            else 
-                {Reverse Tokens}
-            end
-        end
+% Task 2
+fun {OldSum List}
+    case List of nil then
+        0
+    [] Head|Rest then 
+        Head + {OldSum Rest}
     end
 end
 
-{Assert {Interpret {Tokenize {Lex "1 2 +"}}} [3]}
-{Assert {Interpret {Tokenize {Lex "1 2 + 3"}}} [3 3]}
-{Assert {Interpret {Tokenize {Lex "1 2 + 3 *"}}} [9]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d"}}} [5 5 2]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d +"}}} [10 2]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d + /"}}} [5]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d + / 1"}}} [1 5]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d + / 1 i"}}} [~1 5]}
-{Assert {Interpret {Tokenize {Lex "2 2 3 + d + / 1 i +"}}} [4]}
-{Assert {Interpret {Tokenize {Lex "3 6 / 1 +"}}} [3]}
-{Assert {Interpret {Tokenize {Lex "2 1 -"}}} [~1]}
-{Assert {Interpret {Tokenize {Lex "7 d d"}}} [7 7 7]}
-{Assert {Interpret {Tokenize {Lex "1 1 + d c"}}} nil}
+local MyList in
+    MyList = [1 2 3 4 5]
+    {System.show {OldSum MyList}}
+end
 
-Tokens = {Tokenize {Lex "2 2 3 + d + / 1"}}
-{Show Tokens}
-
-Interpreted = {Interpret Tokens}
-{Browse Interpreted}
-
-% Task 2: Convert postfix notation into an expression tree
-fun {ExpressionTreeInternal Tokens ExpressionStack}
-    if Tokens == nil then
-        ExpressionStack.1
-    else
-        local Token Operands A B TempList in
-            case Tokens of nil then
-                nil
-            [] Token|Rest then
-                case Token of number(N) then
-                    {ExpressionTreeInternal Rest {Append ExpressionStack [N]}}
-                [] operator(type:plus) then
-                    Operands = {TakeFromBack ExpressionStack 2}
-                    A = Operands.2.1
-                    B = Operands.1
-                    
-                    TempList = {TakeTillLastTwo ExpressionStack}
-                    {ExpressionTreeInternal Rest {Append TempList [plus(A B)]}}
-                [] operator(type:minus) then
-                    Operands = {TakeFromBack ExpressionStack 2}
-                    A = Operands.2.1
-                    B = Operands.1
-                    
-                    TempList = {TakeTillLastTwo ExpressionStack}
-                    {ExpressionTreeInternal Rest {Append TempList [minus(A B)]}}
-                [] operator(type:multiply) then
-                    Operands = {TakeFromBack ExpressionStack 2}
-                    A = Operands.2.1
-                    B = Operands.1
-                    
-                    TempList = {TakeTillLastTwo ExpressionStack}
-                    {ExpressionTreeInternal Rest {Append TempList [multiply(A B)]}}
-                [] operator(type:divide) then
-                    Operands = {TakeFromBack ExpressionStack 2}
-                    A = Operands.2.1
-                    B = Operands.1
-                    
-                    TempList = {TakeTillLastTwo ExpressionStack}
-                    {ExpressionTreeInternal Rest {Append TempList [divide(A B)]}}
-                end
-            end
-        end
+% Task 3
+fun {RightFold List Op U}
+    case List of nil then
+        U
+    [] Head|Rest then
+        {Op Head {RightFold Rest Op U}}
     end
 end
 
-fun {ExpressionTree Tokens}
-    {ExpressionTreeInternal Tokens nil}
+fun {Sum List}
+    {RightFold List fun {$ X Y} X + Y end 0}
 end
 
-{Assert {ExpressionTree {Tokenize {Lex "1 2 +"}}} plus(2 1)}
-{Assert {ExpressionTree {Tokenize {Lex "2 3 + 5 /"}}} divide(5 plus(3 2))}
-{Assert {ExpressionTree {Tokenize {Lex "3 10 9 * - 7 +"}}} plus(7 minus(multiply(9 10) 3))}
+fun {Length List}
+    {RightFold List fun {$ X Y} 1 + Y end 0}
+end
 
-{System.showInfo "--- DONE ---"}
+local MyList in
+    MyList = [1 2 3 4 5 6]
+    {System.show {Sum MyList}}
+    {System.show {Length MyList}}
+end
+
+% Task 4
+fun {Quadratic A B C}
+    fun {$ X}
+        A * X * X + B * X + C
+    end
+end
+
+{System.show {{Quadratic 3 2 1} 2}}
+
+% Task 5
+fun {LazyNumberGenerator StartValue}
+    StartValue | fun {$} {LazyNumberGenerator StartValue + 1} end
+end
+
+{System.show {LazyNumberGenerator 0}.1}
+{System.show {{LazyNumberGenerator 0}.2}.1}
+{System.show {{{{{{LazyNumberGenerator 0}.2}.2}.2}.2}.2}.1}
+
+% Task 6
+% tail recursive
