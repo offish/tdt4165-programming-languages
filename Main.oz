@@ -55,7 +55,7 @@ fun {RightFold List Op U}
 end
 
 fun {Sum List}
-    {RightFold List fun {$ X Y} X + Y end 0}
+    {RightFold List Number.'+' 0}
 end
 
 fun {Length List}
@@ -87,4 +87,16 @@ end
 {System.show {{{{{{LazyNumberGenerator 0}.2}.2}.2}.2}.2}.1}
 
 % Task 6
-% tail recursive
+fun {InternalSumTailRecursive List Accumulation}
+    case List of nil then
+        Accumulation
+    [] Head|Rest then
+        {InternalSumTailRecursive Rest Head + Accumulation}
+    end
+end
+
+fun {SumTailRecursive List}
+    {InternalSumTailRecursive List 0}
+end
+
+{System.show {SumTailRecursive [1 2 3 4 5 6 7 8 9 10]}}
