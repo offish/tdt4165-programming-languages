@@ -1,1 +1,5 @@
 *.zip
+cs
+.metals
+.scala-build
+.vscode
