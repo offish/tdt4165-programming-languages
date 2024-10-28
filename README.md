@@ -1,1 +1,1 @@
-# Assignment 4 (Scala project part 1)
+# Assignments
