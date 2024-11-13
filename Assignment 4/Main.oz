@@ -96,7 +96,6 @@ LazyList = {LazyEnumerate 1}
 {Browse LazyList.2.2.2.2.2.2.1} % 7
 
 % b
-
 fun lazy {LazyPrimes N}
     case N of Head|Rest then
         if {IsPrime Head} then
@@ -111,8 +110,8 @@ end
 
 PrimesList = {LazyPrimes {LazyEnumerate 2}}
 
-{Browse PrimesList.1}      % 2
-{Browse PrimesList.2.1}    % 3
-{Browse PrimesList.2.2.1}  % 5
+{Browse PrimesList.1} % 2
+{Browse PrimesList.2.1} % 3
+{Browse PrimesList.2.2.1} % 5
 {Browse PrimesList.2.2.2.1} % 7
 {Browse PrimesList.2.2.2.2.1} % 11
