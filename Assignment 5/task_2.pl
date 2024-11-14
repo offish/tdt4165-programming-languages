@@ -25,12 +25,48 @@ distance(c5, c4, 0, 0).
 % Task 2.1
 plan(Cabin1, Cabin2, Path, TotalDistance) :-
     plan_helper(Cabin1, Cabin2, [Cabin1], 0, Path, TotalDistance).
-plan_helper(Cabin2, Cabin2, Path, TotalDistance, Path, TotalDistance).
+
+plan_helper(Cabin2, Cabin2, Visited, TotalDistance, Path, TotalDistance) :-
+    reverse(Visited, Path).  % Reverse the path to show from start to end
+
 plan_helper(Current, Cabin2, Visited, DistanceAcc, Path, TotalDistance) :-
     distance(Current, Next, Distance, 1),
     not(Next = Current),
     not(member(Next, Visited)),
-    NewDistanceAcc #= DistanceAcc + Distance,
+    NewDistanceAcc #= DistanceAcc + Distance,  % Update accumulated distance
     plan_helper(Next, Cabin2, [Next | Visited], NewDistanceAcc, Path, TotalDistance).
 
+% ?- plan(c1, c2, Path, TotalDistance).
+/*
+Path = [c1, c2],
+TotalDistance = 10
+Path = [c1, c4, c2],
+TotalDistance = 19
+Path = [c1, c5, c2],
+TotalDistance = 25
+false
+*/
+
 % Task 2.2
+bestplan(Cabin1, Cabin2, Path, Distance) :-
+    plan(Cabin1, Cabin2, ThisPath, ThisDistance),
+    bestplan_helper(Cabin1, Cabin2, ThisPath, ThisDistance, Path, Distance).
+
+bestplan_helper(_, _, BestPath, BestDistance, BestPath, BestDistance).
+
+bestplan_helper(Cabin1, Cabin2, CurrentBestPath, CurrentBestDistance, BestPath, BestDistance) :-
+    plan(Cabin1, Cabin2, NewPath, NewDistance),
+    not(NewPath = CurrentBestPath),
+    (
+        NewDistance < CurrentBestDistance ->
+            bestplan_helper(Cabin1, Cabin2, NewPath, NewDistance, BestPath, BestDistance)
+        ;
+            bestplan_helper(Cabin1, Cabin2, CurrentBestPath, CurrentBestDistance, BestPath, BestDistance)
+    ).
+
+% ?- bestplan(c1, c2, Path, Distance).
+/*
+Distance = 10,
+Path = [c1, c2]
+...
+*/
