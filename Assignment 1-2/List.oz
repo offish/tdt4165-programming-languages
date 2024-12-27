@@ -1,6 +1,5 @@
+declare Position
 
-% Task 7: Lists
-% a)
 fun {Length List}
     case List of Head|Rest then
         1 + {Length Rest}
@@ -9,8 +8,8 @@ fun {Length List}
     end
 end
 
-% b)
 fun {Take List Count}
+    % Get the first x elements of the list
     if Count > {Length List} then
         List
     elseif Count == 0 then
@@ -23,31 +22,40 @@ fun {Take List Count}
     end
 end
 
-% c)
+fun {TakeTillLastTwo List}
+    {Take List {Length List} - 2}
+end
+
+fun {TakeFromBack List Count}
+    % Get the last x elements of the list
+    {Drop List {Length List} - Count}
+end
+
 fun {Drop List Count}
+    % Drop the first x elements of the list
     if Count > {Length List} then
         nil
     else
-        case List of Head|Tail then
+        case List of Head|Rest then
             if Count == 0 then
                 List
             else
-                {Drop Tail Count - 1}
+                {Drop Rest Count - 1}
             end
+        % [] nil then
+        %     nil
         end
     end
 end
 
-% d)
 fun {Append List1 List2}
     case List1 of Head|Rest then
-        Head|{Append Rest List2}
+        Head | {Append Rest List2}
     else
         List2
     end
 end
 
-% e)
 fun {Member List Element}
     case List of Head|Rest then
         if Head == Element then
@@ -60,7 +68,6 @@ fun {Member List Element}
     end
 end
 
-% f)
 fun {Position List Element}
     case List of Head|Rest then
         if Head == Element then
@@ -68,5 +75,21 @@ fun {Position List Element}
         else
             {Position Rest Element} + 1
         end
+    end
+end
+
+fun {GetUpdatedList Tokens}
+    {Take Tokens.2 {Length Tokens.2} - 2}
+end
+
+fun {GetUpdatedListOne Tokens}
+    {Take Tokens.2 {Length Tokens.2} - 1}
+end
+
+fun {Reverse List}
+    case List of Head|Rest then
+        {Append {Reverse Rest} [Head]}
+    else
+        nil
     end
 end

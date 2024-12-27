@@ -1,0 +1,7 @@
+*.zip
+cs
+.metals
+.scala-build
+.vscode
+target
+.bsp
